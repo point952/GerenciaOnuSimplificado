@@ -1,0 +1,1181 @@
+<html><head><base href="https://websim.creation.engine/onu-point-and-cto/" target="_blank">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SISTEMA DE PRODUÇÃO</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    body {
+        background-color: #e0e8f0; 
+        font-family: 'Roboto', Arial, sans-serif;
+    }
+    #loginForm {
+        margin-top: 100px;
+        background-image: url('https://image.freepik.com/free-vector/abstract-blue-geometric-shapes-background_1035-17545.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 50px;
+        border-radius: 15px;
+    }
+    #loginForm .card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    #loginForm .card-body {
+        padding: 40px;
+    }
+    #loginForm h2 {
+        color: #0056b3;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    #loginForm .form-control {
+        border-radius: 20px;
+        border: 1px solid #007bff;
+        padding: 10px 15px;
+    }
+    #loginForm .btn-primary {
+        width: 100%;
+        border-radius: 20px;
+        padding: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    #loginForm .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        background-color: #0056b3;
+    }
+    #loginForm .form-label {
+        font-weight: bold;
+        color: #0056b3;
+    }
+    #loginForm .fas {
+        color: #007bff;
+        margin-right: 10px;
+    }
+    .btn-custom {
+        background-color: #0056b3; 
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        width: 250px; 
+    }
+    .btn-custom:hover {
+        background-color: #003d82; 
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    #mainMenu {
+        background-color: #f0f4f8; 
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    #mainMenu h1 {
+        color: #0056b3;
+        margin-bottom: 30px;
+    }
+    #mainContent {
+        padding-top: 20px;
+    }
+</style>
+</head>
+<body>
+    <div id="loginForm" class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">Login</h2>
+                        <form id="loginFormInputs">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-user"></i> Username:
+                                </label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock"></i> Password:
+                                </label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-block" onclick="login()">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="container">
+            <div id="mainMenu" class="text-center mt-5">
+                <h1 class="mb-4">SISTEMA DE PRODUÇÃO</h1>
+                <div class="d-flex flex-column align-items-center">
+                    <button class="btn btn-custom btn-lg mb-3" onclick="showForm('onuPointForm')">
+                        <i class="fas fa-tools"></i> INSTALAÇÃO/UPGRADE
+                    </button>
+                    <button class="btn btn-custom btn-lg mb-3" onclick="showForm('ctoAnalysisForm')">
+                        <i class="fas fa-search"></i> Análise de CTO
+                    </button>
+                    <button class="btn btn-custom btn-lg mb-3" onclick="showForm('rmaForm')">
+                        <i class="fas fa-exchange-alt"></i> RMA
+                    </button>
+                    <button class="btn btn-custom btn-lg mb-3" onclick="showForm('ordemServicoForm')">
+                        <i class="fas fa-clipboard-list"></i> Ordem de Serviço
+                    </button>
+                    <button class="btn btn-custom btn-lg mb-3" onclick="showSettings()">
+                        <i class="fas fa-cog"></i> Configurações de Acesso
+                    </button>
+                </div>
+            </div>
+
+            <div id="onuPointForm">
+                <h2>INSTALAÇÃO/UPGRADE</h2>
+                <form id="onuForm">
+                    <div class="mb-3">
+                        <label for="cidade" class="form-label">CIDADE:</label>
+                        <select class="form-select" id="cidade" required>
+                            <option value="">Selecione a Cidade</option>
+                            <option value="ARINOS">ARINOS</option>
+                            <option value="BURITIS">BURITIS</option>
+                            <option value="CABECEIRA GRANDE">CABECEIRA GRANDE</option>
+                            <option value="PARACATU">PARACATU</option>
+                            <option value="PALMITAL">PALMITAL</option>
+                            <option value="UNAI">UNAI</option>
+                            <option value="URUANA">URUANA</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">MODELO:</label>
+                        <select class="form-select" id="modelo" required onchange="toggleWifiSenhaFields()">
+                            <option value="">Selecione o modelo</option>
+                            <option value="HG6143D">HG6143D</option>
+                            <option value="HG6143D3">HG6143D3</option>
+                            <option value="HG6145D2">HG6145D2</option>
+                            <option value="HG6145F3">HG6145F3</option>
+                            <option value="PLUS ROUTER">PLUS ROUTER</option>
+                            <option value="PLUS BRIDGE">PLUS BRIDGE</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoServico" class="form-label">TIPO DE SERVIÇO:</label>
+                        <select class="form-select" id="tipoServico" required>
+                            <option value="">Selecione o tipo de serviço</option>
+                            <option value="Instalação">Instalação</option>
+                            <option value="Upgrade">Upgrade</option>
+                            <option value="Transferência">Transferência</option>
+                            <option value="Suporte">Suporte</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="servico" class="form-label">SERVIÇO:</label>
+                        <input type="number" class="form-control" id="servico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cliente" class="form-label">CLIENTE:</label>
+                        <input type="text" class="form-control" id="cliente" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serial" class="form-label">SERIAL:</label>
+                        <input type="text" class="form-control" id="serial" required>
+                        <small id="serialHelp" class="form-text text-muted" style="display: none;">Serial da ONU sempre inicia com FHTT.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sinalCaixa" class="form-label">SINAL CAIXA:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="sinalCaixa" required step="0.01">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sinalOnu" class="form-label">SINAL ONU:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="sinalOnu" required step="0.01">
+                        </div>
+                    </div>
+                    <div class="mb-3" id="wifiField" style="display: none;">
+                        <label for="wifi" class="form-label">WIFI:</label>
+                        <input type="text" class="form-control" id="wifi" maxlength="23">
+                        <small id="wifiHelp" class="form-text text-muted" style="display: none;">Máximo de 23 caracteres.</small>
+                    </div>
+                    <div class="mb-3" id="senhaField" style="display: none;">
+                        <label for="senha" class="form-label">SENHA:</label>
+                        <input type="text" class="form-control" id="senha" minlength="8">
+                        <small id="senhaHelp" class="form-text text-muted" style="display: none;">A senha deve ter pelo menos 8 caracteres.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coordenadas" class="form-label">COORDENADAS:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="coordenadas" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="obterLocalizacao('coordenadas')">
+                                Obter Localização
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="gerarTabelaONU()">Gerar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="voltar()">Voltar</button>
+                </form>
+                <div id="resultadoTabelaONU" class="mt-4" style="display: none;">
+                    <h3>Tabela Gerada:</h3>
+                    <pre id="tabelaTextoONU"></pre>
+                    <button type="button" class="btn btn-info" onclick="copiarTabelaONU()">Copiar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparCamposONU()">Limpar</button>
+                </div>
+            </div>
+
+            <div id="ctoAnalysisForm">
+                <h2>Análise de CTO</h2>
+                <form id="ctoForm">
+                    <div class="mb-3">
+                        <label for="tipoSplitter" class="form-label">Tipo de Splitter:</label>
+                        <select class="form-select" id="tipoSplitter" required onchange="toggleServiceFields()">
+                            <option value="">Selecione o tipo de splitter</option>
+                            <option value="1/8">1/8</option>
+                            <option value="1/16">1/16</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bairro" class="form-label">BAIRRO:</label>
+                        <input type="text" class="form-control" id="bairro" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rua" class="form-label">RUA:</label>
+                        <input type="text" class="form-control" id="rua" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ctoCoordenadas" class="form-label">COORDENADAS:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="ctoCoordenadas" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="obterLocalizacaoCTO()">
+                                Obter Localização
+                            </button>
+                        </div>
+                    </div>
+                    <div id="servicosCliente"></div>
+                    <button type="button" class="btn btn-primary" onclick="gerarTabelaCTO()">Gerar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="voltar()">Voltar</button>
+                </form>
+                <div id="resultadoTabelaCTO" class="mt-4" style="display: none;">
+                    <h3>Tabela Gerada:</h3>
+                    <pre id="tabelaTextoCTO"></pre>
+                    <button type="button" class="btn btn-info" onclick="copiarTabelaCTO()">Copiar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparCamposCTO()">Limpar</button>
+                </div>
+            </div>
+
+            <div id="rmaForm" style="display: none;">
+                <h2>RMA</h2>
+                <form id="rmaFormInputs">
+                    <div class="mb-3">
+                        <label for="rmaServico" class="form-label">SERVIÇO:</label>
+                        <input type="text" class="form-control" id="rmaServico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rmaNome" class="form-label">NOME:</label>
+                        <input type="text" class="form-control" id="rmaNome" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rmaData" class="form-label">DATA:</label>
+                        <input type="date" class="form-control" id="rmaData" required>
+                    </div>
+                    <fieldset class="mb-3">
+                        <legend>ONU</legend>
+                        <div class="mb-2">
+                            <label for="onuModelo" class="form-label">Modelo:</label>
+                            <select class="form-select" id="onuModelo">
+                                <option value="">Selecione o modelo</option>
+                                <option value="HG6143D">HG6143D</option>
+                                <option value="HG6143D3">HG6143D3</option>
+                                <option value="HG6145D2">HG6145D2</option>
+                                <option value="HG6145F3">HG6145F3</option>
+                                <option value="PLUS ROUTER">PLUS ROUTER</option>
+                                <option value="PLUS BRIDGE">PLUS BRIDGE</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="onuSerial" class="form-label">Serial da ONU:</label>
+                            <div class="input-group">
+                                <span class="input-group-text">FHTT</span>
+                                <input type="text" class="form-control" id="onuSerial" placeholder="Digite o restante do serial">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Ligando:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="onuLigando" id="onuLigandoSim" value="SIM">
+                                <label class="form-check-label" for="onuLigandoSim">SIM</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="onuLigando" id="onuLigandoNao" value="NÃO">
+                                <label class="form-check-label" for="onuLigandoNao">NÃO</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Problema de sinal:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="onuSinal" id="onuSinalSim" value="SIM">
+                                <label class="form-check-label" for="onuSinalSim">SIM</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="onuSinal" id="onuSinalNao" value="NÃO">
+                                <label class="form-check-label" for="onuSinalNao">NÃO</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Falha no Wi-Fi:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuWifi2ghz" value="2Ghz">
+                                <label class="form-check-label" for="onuWifi2ghz">2Ghz</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuWifi5ghz" value="5Ghz">
+                                <label class="form-check-label" for="onuWifi5ghz">5Ghz</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Portas Lan falhas:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuLanPorta1" value="1">
+                                <label class="form-check-label" for="onuLanPorta1">1</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuLanPorta2" value="2">
+                                <label class="form-check-label" for="onuLanPorta2">2</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuLanPorta3" value="3">
+                                <label class="form-check-label" for="onuLanPorta3">3</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuLanPorta4" value="4">
+                                <label class="form-check-label" for="onuLanPorta4">4</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Danos físicos:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuDanoCarcaca" value="Carcaça">
+                                <label class="form-check-label" for="onuDanoCarcaca">Carcaça</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="onuDanoAntenas" value="Antenas">
+                                <label class="form-check-label" for="onuDanoAntenas">Antenas</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="onuOutros" class="form-label">Outros:</label>
+                            <input type="text" class="form-control" id="onuOutros">
+                        </div>
+                    </fieldset>
+                    <fieldset class="mb-3">
+                        <legend>RADIO</legend>
+                        <div class="mb-2">
+                            <label>Ligando:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioLigando" id="radioLigandoSim" value="SIM">
+                                <label class="form-check-label" for="radioLigandoSim">SIM</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioLigando" id="radioLigandoNao" value="NÃO">
+                                <label class="form-check-label" for="radioLigandoNao">NÃO</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Sinal Fraco(Saturado):</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioSinal" id="radioSinalSim" value="SIM">
+                                <label class="form-check-label" for="radioSinalSim">SIM</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioSinal" id="radioSinalNao" value="NÃO">
+                                <label class="form-check-label" for="radioSinalNao">NÃO</label>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label>Falhas na rede (LAN):</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioLan" id="radioLanSim" value="SIM">
+                                <label class="form-check-label" for="radioLanSim">SIM</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="radioLan" id="radioLanNao" value="NÃO">
+                                <label class="form-check-label" for="radioLanNao">NÃO</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="mb-3">
+                        <label for="rmaTecnico" class="form-label">Técnico:</label>
+                        <input type="text" class="form-control" id="rmaTecnico">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rmaObservacoes" class="form-label">Observações:</label>
+                        <textarea class="form-control" id="rmaObservacoes" rows="3"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="gerarTabelaRMA()">Gerar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="voltar()">Voltar</button>
+                </form>
+                <div id="resultadoTabelaRMA" class="mt-4" style="display: none;">
+                    <h3>Tabela Gerada:</h3>
+                    <pre id="tabelaTextoRMA"></pre>
+                    <button type="button" class="btn btn-info" onclick="copiarTabelaRMA()">Copiar Tabela</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparCamposRMA()">Limpar</button>
+                </div>
+            </div>
+
+            <div id="ordemServicoForm" style="display: none;">
+                <h2>Gestão de Ordens de Serviço</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <form id="osForm">
+                            <div class="mb-3">
+                                <label for="osNumero" class="form-label">Número da OS:</label>
+                                <input type="text" class="form-control" id="osNumero" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osCliente" class="form-label">Cliente:</label>
+                                <input type="text" class="form-control" id="osCliente" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osEndereco" class="form-label">Endereço:</label>
+                                <input type="text" class="form-control" id="osEndereco" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osEstado" class="form-label">Estado:</label>
+                                <input type="text" class="form-control" id="osEstado" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osCidade" class="form-label">Cidade:</label>
+                                <input type="text" class="form-control" id="osCidade" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osTecnico" class="form-label">Técnico:</label>
+                                <select class="form-select" id="osTecnico" required>
+                                    <option value="">Selecione um técnico</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osStatus" class="form-label">Status:</label>
+                                <select class="form-select" id="osStatus" required>
+                                    <option value="Pendente">Pendente</option>
+                                    <option value="Em andamento">Em andamento</option>
+                                    <option value="Concluído">Concluído</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osDescricao" class="form-label">Descrição:</label>
+                                <input type="text" class="form-control" id="osDescricao" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="osPrioridade" class="form-label">Prioridade:</label>
+                                <select class="form-select" id="osPrioridade" required>
+                                    <option value="Baixa">Baixa</option>
+                                    <option value="Média">Média</option>
+                                    <option value="Alta">Alta</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="cadastrarOS()">Cadastrar OS</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="osMap" style="height: 400px;"></div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h3>Ordens de Serviço</h3>
+                    <table class="table table-striped" id="osTable">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Cliente</th>
+                                <th>Endereço</th>
+                                <th>Técnico</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- OS entries will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="tracarRotaMultipla()">Traçar Rota para Múltiplas OS</button>
+                <button type="button" class="btn btn-secondary" onclick="voltar()">Voltar</button>
+            </div>
+
+            <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="settingsModalLabel">Configurações de Acesso</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Usuários</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab" aria-controls="permissions" aria-selected="false">Permissões</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab" aria-controls="audit" aria-selected="false">Auditoria</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="settingsTabContent">
+                                <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                                    <h6 class="mt-3">Gerenciar Usuários</h6>
+                                    <form id="addUserForm">
+                                        <div class="mb-3">
+                                            <input type="text" class="form-control" id="newUsername" placeholder="Nome de usuário" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="password" class="form-control" id="newPassword" placeholder="Senha" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <select class="form-select" id="newUserRole" required>
+                                                <option value="">Selecione o papel</option>
+                                                <option value="admin">Administrador</option>
+                                                <option value="user">Usuário</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" onclick="addUser()">Adicionar Usuário</button>
+                                    </form>
+                                    <ul id="userList" class="list-group mt-3">
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+                                    <h6 class="mt-3">Gerenciar Permissões</h6>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Função</th>
+                                                <th>Instalação/Upgrade</th>
+                                                <th>Análise de CTO</th>
+                                                <th>RMA</th>
+                                                <th>Ordem de Serviço</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="permissionsTable">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="audit" role="tabpanel" aria-labelledby="audit-tab">
+                                    <h6 class="mt-3">Registro de Atividades</h6>
+                                    <ul id="auditLog" class="list-group">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editOSModal" class="modal fade" tabindex="-1">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Editar Ordem de Serviço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <h6>Detalhes da Ordem #<span id="editOSNumber"></span></h6>
+                    <p><strong>Cliente:</strong> <span id="editOSClient"></span></p>
+                    <p><strong>Descrição:</strong> <span id="editOSDescription"></span></p>
+                    <p><strong>Técnico:</strong> <span id="editOSTechnician"></span></p>
+                    <p><strong>Prioridade:</strong> <span id="editOSPriority"></span></p>
+                    <p><strong>Data de Criação:</strong> <span id="editOSCreationDate"></span></p>
+                    <form id="editOSForm">
+                      <div class="mb-3">
+                        <label for="editOSStatus" class="form-label">Status:</label>
+                        <select class="form-select" id="editOSStatus" required>
+                          <option value="Pendente">Pendente</option>
+                          <option value="Em andamento">Em andamento</option>
+                          <option value="Concluído">Concluído</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Checklist de Conclusão:</label>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkEquipment">
+                          <label class="form-check-label" for="checkEquipment">Verificar equipamento</label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkMaintenance">
+                          <label class="form-check-label" for="checkMaintenance">Realizar manutenção</label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkTesting">
+                          <label class="form-check-label" for="checkTesting">Testar funcionamento</label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkSignature">
+                          <label class="form-check-label" for="checkSignature">Obter assinatura do cliente</label>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="osPhotos" class="form-label">Adicionar Fotos:</label>
+                        <input type="file" class="form-control" id="osPhotos" multiple accept="image/*">
+                      </div>
+                      <div class="mb-3">
+                        <label for="osNotes" class="form-label">Observações:</label>
+                        <textarea class="form-control" id="osNotes" rows="3"></textarea>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarEdicaoOS()">Salvar Alterações</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+        <script>
+            let users = [
+                { username: 'admin', password: 'admin', role: 'admin' }
+            ];
+            let currentUser = null;
+            let osMap;
+            let routingControl;
+            let auditLog = [];
+            let ordensServico = [];
+            let technicians = ['Técnico 1', 'Técnico 2', 'Técnico 3'];
+            let editingOSIndex = -1;
+
+            function initializeMap() {
+                osMap = L.map('osMap').setView([-15.7801, -47.9292], 5); 
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(osMap);
+
+                routingControl = L.Routing.control({
+                    waypoints: [],
+                    routeWhileDragging: true,
+                    show: false
+                }).addTo(osMap);
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeMap();
+                initializeTechniciansDropdown();
+            });
+
+            function login() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    addAuditEntry(`Usuário ${username} fez login`);
+                } else {
+                    alert('Nome de usuário ou senha inválidos');
+                }
+            }
+
+            function addUser() {
+                const username = document.getElementById('newUsername').value;
+                const password = document.getElementById('newPassword').value;
+                const role = document.getElementById('newUserRole').value;
+                if (username && password && role) {
+                    users.push({ username, password, role });
+                    updateUserList();
+                    addAuditEntry(`Novo usuário ${username} adicionado com papel ${role}`);
+                    document.getElementById('addUserForm').reset();
+                }
+            }
+
+            function showSettings() {
+                if (currentUser && currentUser.role !== 'admin') {
+                    alert('Você não tem permissão para acessar as configurações');
+                    return;
+                }
+                updateUserList();
+                updatePermissionsTable();
+                updateAuditLog();
+                new bootstrap.Modal(document.getElementById('settingsModal')).show();
+            }
+
+            function updateUserList() {
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                users.forEach((user, index) => {
+                    if (user.username !== 'admin' || index !== 0) {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.textContent = `${user.username} (${user.role})`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'btn btn-danger btn-sm';
+                        deleteButton.textContent = 'Remover';
+                        deleteButton.onclick = () => removeUser(index);
+                        li.appendChild(deleteButton);
+                        userList.appendChild(li);
+                    }
+                });
+            }
+
+            function removeUser(index) {
+                const removedUser = users[index];
+                users.splice(index, 1);
+                updateUserList();
+                addAuditEntry(`Usuário ${removedUser.username} removido`);
+            }
+
+            function updatePermissionsTable() {
+                const permissionsTable = document.getElementById('permissionsTable');
+                permissionsTable.innerHTML = '';
+                ['admin', 'user'].forEach(role => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${role}</td>
+                        <td><input type="checkbox" ${role === 'admin' ? 'checked disabled' : ''} onchange="updatePermission('${role}', 'instalacao')"></td>
+                        <td><input type="checkbox" ${role === 'admin' ? 'checked disabled' : ''} onchange="updatePermission('${role}', 'cto')"></td>
+                        <td><input type="checkbox" ${role === 'admin' ? 'checked disabled' : ''} onchange="updatePermission('${role}', 'rma')"></td>
+                        <td><input type="checkbox" ${role === 'admin' ? 'checked disabled' : ''} onchange="updatePermission('${role}', 'os')"></td>
+                    `;
+                    permissionsTable.appendChild(tr);
+                });
+            }
+
+            function updatePermission(role, permission) {
+                addAuditEntry(`Permissão ${permission} ${event.target.checked ? 'concedida' : 'revogada'} para ${role}`);
+            }
+
+            function addAuditEntry(entry) {
+                auditLog.push({ timestamp: new Date(), entry });
+                updateAuditLog();
+            }
+
+            function updateAuditLog() {
+                const auditLogElement = document.getElementById('auditLog');
+                auditLogElement.innerHTML = '';
+                auditLog.slice().reverse().forEach(log => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = `${log.timestamp.toLocaleString()}: ${log.entry}`;
+                    auditLogElement.appendChild(li);
+                });
+            }
+
+            function showForm(formId) {
+                if (!currentUser) {
+                    alert('Por favor, faça login primeiro');
+                    return;
+                }
+
+                const permissionMap = {
+                    'onuPointForm': 'instalacao',
+                    'ctoAnalysisForm': 'cto',
+                    'rmaForm': 'rma',
+                    'ordemServicoForm': 'os'
+                };
+
+                const requiredPermission = permissionMap[formId];
+                if (currentUser.role !== 'admin' && !hasPermission(currentUser.role, requiredPermission)) {
+                    alert('Você não tem permissão para acessar esta função');
+                    return;
+                }
+
+                document.querySelectorAll('#onuPointForm, #ctoAnalysisForm, #rmaForm, #ordemServicoForm').forEach(form => {
+                    form.style.display = 'none';
+                });
+
+                document.getElementById('mainMenu').style.display = 'none';
+                document.getElementById(formId).style.display = 'block';
+                addAuditEntry(`Usuário ${currentUser.username} acessou ${formId}`);
+                
+                if (formId === 'ordemServicoForm') {
+                    setTimeout(() => {
+                        osMap.invalidateSize();
+                    }, 100);
+                }
+            }
+
+            function hasPermission(role, permission) {
+                return true;
+            }
+
+            function voltar() {
+                document.querySelectorAll('#onuPointForm, #ctoAnalysisForm, #rmaForm, #ordemServicoForm').forEach(form => {
+                    form.style.display = 'none';
+                });
+
+                document.getElementById('mainMenu').style.display = 'block';
+            }
+
+            function obterLocalizacao(coordenadaId) {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        document.getElementById(coordenadaId).value = `${lat}, ${lon}`;
+                    }, function(error) {
+                        console.error("Error obtaining location: ", error);
+                        alert("Não foi possível obter a localização. Por favor, verifique suas configurações de GPS.");
+                    });
+                } else {
+                    alert("Geolocalização não é suportada neste navegador.");
+                }
+            }
+
+            function obterLocalizacaoCTO() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        document.getElementById('ctoCoordenadas').value = `${lat}, ${lon}`;
+                        
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.address) {
+                                    document.getElementById('bairro').value = data.address.suburb || data.address.neighbourhood || '';
+                                    document.getElementById('rua').value = data.address.road || '';
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error fetching address:", error);
+                            });
+                    }, function(error) {
+                        console.error("Error obtaining location: ", error);
+                        alert("Não foi possível obter a localização. Por favor, verifique suas configurações de GPS.");
+                    });
+                } else {
+                    alert("Geolocalização não é suportada neste navegador.");
+                }
+            }
+
+            function cadastrarOS() {
+                if (!currentUser) {
+                    alert('Por favor, faça login primeiro');
+                    return;
+                }
+
+                // Request geolocation
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        const numero = document.getElementById('osNumero').value;
+                        const cliente = document.getElementById('osCliente').value;
+                        const estado = document.getElementById('osEstado').value;
+                        const cidade = document.getElementById('osCidade').value;
+                        const endereco = document.getElementById('osEndereco').value;
+                        const tecnico = document.getElementById('osTecnico').value;
+                        const status = document.getElementById('osStatus').value;
+                        const descricao = document.getElementById('osDescricao').value;
+                        const prioridade = document.getElementById('osPrioridade').value;
+                        const dataCreation = new Date().toLocaleString();
+
+                        const fullAddress = `${endereco}, ${cidade}, ${estado}`;
+
+                        const novaOS = { 
+                            numero, 
+                            cliente, 
+                            endereco: fullAddress, 
+                            tecnico, 
+                            status, 
+                            coordinates: [lat, lon],
+                            descricao,
+                            prioridade,
+                            dataCreation,
+                            notes: '',
+                            photos: [],
+                            checklist: {
+                                equipment: false,
+                                maintenance: false,
+                                testing: false,
+                                signature: false
+                            }
+                        };
+
+                        ordensServico.push(novaOS);
+
+                        atualizarTabelaOS();
+                        document.getElementById('osForm').reset();
+
+                        osMap.setView([lat, lon], 15);
+
+                        L.marker([lat, lon]).addTo(osMap)
+                            .bindPopup(`OS ${numero}: ${cliente}`);
+                        
+                        const waypoints = [L.latLng(lat, lon)];
+                        ordensServico.forEach(os => {
+                            if (os.status !== 'Concluído') {
+                                waypoints.push(L.latLng(os.coordinates[0], os.coordinates[1]));
+                            }
+                        });
+                        routingControl.setWaypoints(waypoints);
+
+                    }, function(error) {
+                        console.error("Error obtaining location: ", error);
+                        alert("Não foi possível obter a localização. Por favor, verifique suas configurações de GPS.");
+                    });
+                } else {
+                    alert("Geolocalização não é suportada neste navegador.");
+                }
+            }
+
+            function toggleServiceFields() {
+                const tipoSplitter = document.getElementById('tipoSplitter').value;
+                const servicosCliente = document.getElementById('servicosCliente');
+                servicosCliente.innerHTML = '';
+                
+                const numServices = tipoSplitter === '1/8' ? 8 : 16;
+                
+                for (let i = 1; i <= numServices; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'mb-3';
+                    div.innerHTML = `
+                        <label for="servico${i}" class="form-label">Serviço ${i}:</label>
+                        <input type="text" class="form-control" id="servico${i}" placeholder="Digite o serviço ${i}">
+                    `;
+                    servicosCliente.appendChild(div);
+                }
+            }
+
+            function gerarTabelaRMA() {
+                const servico = document.getElementById('rmaServico').value;
+                const nome = document.getElementById('rmaNome').value;
+                const data = document.getElementById('rmaData').value;
+                const onuModelo = document.getElementById('onuModelo').value;
+                const onuSerial = 'FHTT' + document.getElementById('onuSerial').value;
+                const onuLigando = document.querySelector('input[name="onuLigando"]:checked')?.value || 'N/A';
+                const onuSinal = document.querySelector('input[name="onuSinal"]:checked')?.value || 'N/A';
+                const onuWifi = [
+                    document.getElementById('onuWifi2ghz').checked ? '2Ghz' : '',
+                    document.getElementById('onuWifi5ghz').checked ? '5Ghz' : ''
+                ].filter(Boolean).join(', ') || 'N/A';
+                const onuLanPortas = ['1', '2', '3', '4']
+                    .filter(porta => document.getElementById(`onuLanPorta${porta}`).checked)
+                    .join(', ') || 'N/A';
+                const onuDanos = [
+                    document.getElementById('onuDanoCarcaca').checked ? 'Carcaça' : '',
+                    document.getElementById('onuDanoAntenas').checked ? 'Antenas' : ''
+                ].filter(Boolean).join(', ') || 'N/A';
+                const onuOutros = document.getElementById('onuOutros').value;
+                const radioLigando = document.querySelector('input[name="radioLigando"]:checked')?.value || 'N/A';
+                const radioSinal = document.querySelector('input[name="radioSinal"]:checked')?.value || 'N/A';
+                const radioLan = document.querySelector('input[name="radioLan"]:checked')?.value || 'N/A';
+                const tecnico = document.getElementById('rmaTecnico').value;
+                const observacoes = document.getElementById('rmaObservacoes').value;
+
+                let tabela = `RMA\n`;
+                tabela += `Serviço: ${servico}\n`;
+                tabela += `Nome: ${nome}\n`;
+                tabela += `Data: ${data}\n\n`;
+                tabela += `ONU\n`;
+                tabela += `Modelo: ${onuModelo}\n`;
+                tabela += `Serial: ${onuSerial}\n`;
+                tabela += `Ligando: ${onuLigando}\n`;
+                tabela += `Problema de sinal: ${onuSinal}\n`;
+                tabela += `Falha no Wi-Fi: ${onuWifi}\n`;
+                tabela += `Portas LAN falhas: ${onuLanPortas}\n`;
+                tabela += `Danos físicos: ${onuDanos}\n`;
+                tabela += `Outros: ${onuOutros}\n\n`;
+                tabela += `RADIO\n`;
+                tabela += `Ligando: ${radioLigando}\n`;
+                tabela += `Sinal Fraco(Saturado): ${radioSinal}\n`;
+                tabela += `Falhas na rede (LAN): ${radioLan}\n\n`;
+                tabela += `Técnico: ${tecnico}\n`;
+                tabela += `Observações: ${observacoes}\n`;
+
+                document.getElementById('resultadoTabelaRMA').style.display = 'block';
+                document.getElementById('tabelaTextoRMA').textContent = tabela;
+            }
+
+            function gerarTabelaCTO() {
+                const tipoSplitter = document.getElementById('tipoSplitter').value;
+                const bairro = document.getElementById('bairro').value;
+                const rua = document.getElementById('rua').value;
+                const coordenadas = document.getElementById('ctoCoordenadas').value;
+
+                let tabela = `Análise de CTO\n`;
+                tabela += `Tipo de Splitter: ${tipoSplitter}\n`;
+                tabela += `Bairro: ${bairro}\n`;
+                tabela += `Rua: ${rua}\n`;
+                tabela += `Coordenadas: ${coordenadas}\n\n`;
+                tabela += `Serviços:\n`;
+
+                const numServices = tipoSplitter === '1/8' ? 8 : 16;
+                for (let i = 1; i <= numServices; i++) {
+                    const servico = document.getElementById(`servico${i}`).value;
+                    if (servico) {
+                        tabela += `${i}. ${servico}\n`;
+                    }
+                }
+
+                document.getElementById('resultadoTabelaCTO').style.display = 'block';
+                document.getElementById('tabelaTextoCTO').textContent = tabela;
+            }
+
+            function copiarTabelaCTO() {
+                const tabelaTexto = document.getElementById('tabelaTextoCTO').textContent;
+                navigator.clipboard.writeText(tabelaTexto).then(() => {
+                    alert("Tabela CTO copiada para a área de transferência!");
+                });
+            }
+
+            function gerarTabelaONU() {
+                const cidade = document.getElementById('cidade').value;
+                const modelo = document.getElementById('modelo').value;
+                const tipoServico = document.getElementById('tipoServico').value;
+                const servico = document.getElementById('servico').value;
+                const cliente = document.getElementById('cliente').value;
+                const serial = document.getElementById('serial').value;
+                const sinalCaixa = document.getElementById('sinalCaixa').value;
+                const sinalOnu = document.getElementById('sinalOnu').value;
+                const wifi = document.getElementById('wifi').value;
+                const senha = document.getElementById('senha').value;
+                const coordenadas = document.getElementById('coordenadas').value;
+
+                let tabela = `Instalação/Upgrade ONU\n`;
+                tabela += `Cidade: ${cidade}\n`;
+                tabela += `Modelo: ${modelo}\n`;
+                tabela += `Tipo de Serviço: ${tipoServico}\n`;
+                tabela += `Serviço: ${servico}\n`;
+                tabela += `Cliente: ${cliente}\n`;
+                tabela += `Serial: ${serial}\n`;
+                tabela += `Sinal Caixa: -${sinalCaixa}\n`;
+                tabela += `Sinal ONU: -${sinalOnu}\n`;
+                if (wifi) tabela += `WiFi: ${wifi}\n`;
+                if (senha) tabela += `Senha: ${senha}\n`;
+                tabela += `Coordenadas: ${coordenadas}\n`;
+
+                document.getElementById('resultadoTabelaONU').style.display = 'block';
+                document.getElementById('tabelaTextoONU').textContent = tabela;
+            }
+
+            function copiarTabelaONU() {
+                const tabelaTexto = document.getElementById('tabelaTextoONU').textContent;
+                navigator.clipboard.writeText(tabelaTexto).then(() => {
+                    alert("Tabela ONU copiada para a área de transferência!");
+                });
+            }
+
+            function limparCamposRMA() {
+                document.getElementById('rmaFormInputs').reset();
+                document.getElementById('resultadoTabelaRMA').style.display = 'none';
+            }
+
+            function limparCamposCTO() {
+                document.getElementById('ctoForm').reset();
+                document.getElementById('resultadoTabelaCTO').style.display = 'none';
+            }
+
+            function limparCamposONU() {
+                document.getElementById('onuForm').reset();
+                document.getElementById('resultadoTabelaONU').style.display = 'none';
+            }
+
+            function atualizarTabelaOS() {
+                const tbody = document.querySelector('#osTable tbody');
+                tbody.innerHTML = '';
+                ordensServico.forEach((os, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${os.numero}</td>
+                        <td>${os.cliente}</td>
+                        <td>${os.endereco}</td>
+                        <td>${os.tecnico}</td>
+                        <td>${os.status}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editarOS(${index})">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="removerOS(${index})">Remover</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function editarOS(index) {
+                editingOSIndex = index;
+                const os = ordensServico[index];
+                document.getElementById('editOSNumber').textContent = os.numero;
+                document.getElementById('editOSClient').textContent = os.cliente;
+                document.getElementById('editOSDescription').textContent = os.descricao;
+                document.getElementById('editOSTechnician').textContent = os.tecnico;
+                document.getElementById('editOSPriority').textContent = os.prioridade;
+                document.getElementById('editOSCreationDate').textContent = os.dataCreation;
+                document.getElementById('editOSStatus').value = os.status;
+                document.getElementById('checkEquipment').checked = os.checklist.equipment;
+                document.getElementById('checkMaintenance').checked = os.checklist.maintenance;
+                document.getElementById('checkTesting').checked = os.checklist.testing;
+                document.getElementById('checkSignature').checked = os.checklist.signature;
+                document.getElementById('osNotes').value = os.notes;
+                new bootstrap.Modal(document.getElementById('editOSModal')).show();
+            }
+
+            function removerOS(index) {
+                if (confirm('Tem certeza que deseja remover esta Ordem de Serviço?')) {
+                    ordensServico.splice(index, 1);
+                    atualizarTabelaOS();
+                }
+            }
+
+            function salvarEdicaoOS() {
+                if (editingOSIndex === -1) return;
+                const os = ordensServico[editingOSIndex];
+                os.status = document.getElementById('editOSStatus').value;
+                os.checklist = {
+                    equipment: document.getElementById('checkEquipment').checked,
+                    maintenance: document.getElementById('checkMaintenance').checked,
+                    testing: document.getElementById('checkTesting').checked,
+                    signature: document.getElementById('checkSignature').checked
+                };
+                os.notes = document.getElementById('osNotes').value;
+                atualizarTabelaOS();
+                bootstrap.Modal.getInstance(document.getElementById('editOSModal')).hide();
+                editingOSIndex = -1;
+            }
+
+            function initializeTechniciansDropdown() {
+                const technicianSelect = document.getElementById('osTecnico');
+                technicians.forEach(tech => {
+                    const option = document.createElement('option');
+                    option.value = tech;
+                    option.textContent = tech;
+                    technicianSelect.appendChild(option);
+                });
+            }
+
+            function toggleWifiSenhaFields() {
+                const modelo = document.getElementById('modelo').value;
+                const wifiField = document.getElementById('wifiField');
+                const senhaField = document.getElementById('senhaField');
+                const wifiHelp = document.getElementById('wifiHelp');
+                const senhaHelp = document.getElementById('senhaHelp');
+
+                if (modelo === 'HG6143D' || modelo === 'HG6143D3' || modelo === 'HG6145D2' || modelo === 'HG6145F3' || modelo === 'PLUS ROUTER') {
+                    wifiField.style.display = 'block';
+                    senhaField.style.display = 'block';
+                    wifiHelp.style.display = 'block';
+                    senhaHelp.style.display = 'block';
+                } else {
+                    wifiField.style.display = 'none';
+                    senhaField.style.display = 'none';
+                    wifiHelp.style.display = 'none';
+                    senhaHelp.style.display = 'none';
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
