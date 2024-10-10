@@ -867,11 +867,10 @@
                     return;
                 }
 
-                // Request geolocation
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
+                        const currentLat = position.coords.latitude;
+                        const currentLon = position.coords.longitude;
                         
                         const numero = document.getElementById('osNumero').value;
                         const cliente = document.getElementById('osCliente').value;
@@ -886,50 +885,87 @@
 
                         const fullAddress = `${endereco}, ${cidade}, ${estado}`;
 
-                        const novaOS = { 
-                            numero, 
-                            cliente, 
-                            endereco: fullAddress, 
-                            tecnico, 
-                            status, 
-                            coordinates: [lat, lon],
-                            descricao,
-                            prioridade,
-                            dataCreation,
-                            notes: '',
-                            photos: [],
-                            checklist: {
-                                equipment: false,
-                                maintenance: false,
-                                testing: false,
-                                signature: false
-                            }
-                        };
+                        // Geocode the entered address
+                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.length > 0) {
+                                    const lat = parseFloat(data[0].lat);
+                                    const lon = parseFloat(data[0].lon);
 
-                        ordensServico.push(novaOS);
+                                    const novaOS = { 
+                                        numero, 
+                                        cliente, 
+                                        endereco: fullAddress, 
+                                        tecnico, 
+                                        status, 
+                                        coordinates: [lat, lon],
+                                        descricao,
+                                        prioridade,
+                                        dataCreation,
+                                        notes: '',
+                                        photos: [],
+                                        checklist: {
+                                            equipment: false,
+                                            maintenance: false,
+                                            testing: false,
+                                            signature: false
+                                        }
+                                    };
 
-                        atualizarTabelaOS();
-                        document.getElementById('osForm').reset();
+                                    ordensServico.push(novaOS);
 
-                        osMap.setView([lat, lon], 15);
+                                    atualizarTabelaOS();
+                                    document.getElementById('osForm').reset();
 
-                        L.marker([lat, lon]).addTo(osMap)
-                            .bindPopup(`OS ${numero}: ${cliente}`);
-                        
-                        const waypoints = [L.latLng(lat, lon)];
-                        ordensServico.forEach(os => {
-                            if (os.status !== 'Concluído') {
-                                waypoints.push(L.latLng(os.coordinates[0], os.coordinates[1]));
-                            }
-                        });
-                        routingControl.setWaypoints(waypoints);
+                                    osMap.setView([lat, lon], 15);
+
+                                    L.marker([lat, lon]).addTo(osMap)
+                                        .bindPopup(`OS ${numero}: ${cliente}`);
+                                    
+                                    atualizarRotaOtimizada([currentLat, currentLon]);
+                                } else {
+                                    alert("Não foi possível encontrar o endereço. Por favor, verifique e tente novamente.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error geocoding address:", error);
+                                alert("Ocorreu um erro ao processar o endereço. Por favor, tente novamente.");
+                            });
 
                     }, function(error) {
                         console.error("Error obtaining location: ", error);
-                        alert("Não foi possível obter a localização. Por favor, verifique suas configurações de GPS.");
+                        alert("Não foi possível obter a localização atual. Por favor, verifique suas configurações de GPS.");
                     });
                 } else {
                     alert("Geolocalização não é suportada neste navegador.");
+                }
+            }
+
+            function atualizarRotaOtimizada(startCoordinates) {
+                const waypoints = [L.latLng(startCoordinates[0], startCoordinates[1])];
+                
+                ordensServico
+                    .filter(os => os.status !== 'Concluído')
+                    .forEach(os => waypoints.push(L.latLng(os.coordinates[0], os.coordinates[1])));
+
+                if (waypoints.length > 1) {
+                    // Use the Leaflet Routing Machine to calculate the optimized route
+                    routingControl.setWaypoints(waypoints);
+                } else {
+                    routingControl.setWaypoints([]);
+                }
+            }
+
+            function atualizarRota() {
+                const waypoints = ordensServico
+                    .filter(os => os.status !== 'Concluído')
+                    .map(os => L.latLng(os.coordinates[0], os.coordinates[1]));
+
+                if (waypoints.length > 0) {
+                    routingControl.setWaypoints(waypoints);
+                } else {
+                    routingControl.setWaypoints([]);
                 }
             }
 
